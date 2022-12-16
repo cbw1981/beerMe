@@ -14,18 +14,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <title>BeerMe</title>
 </head>
-<body>
-    <section id="app-container" class="container mx-auto">
-        <header class="text-center mt-20 text-2xl font-bold">Beer Me <img src="https://img.icons8.com/office/40/null/bavarian-beer-mug.png" class="inline"/></header>
-        <nav class="inline">
-            <section class="text-center mt-10 align-middle">
-                <input type="type" id="search-bar" class="border-solid border-2 rounded-lg p-2 align-middle" placeholder="City"></input>
-                <button class="border-solid rounded-lg border-2 p-2 align-middle" onclick="if (document.getElementById('search-bar').value !== '') { searchBreweries(document.getElementById('search-bar').value); }"><span class="material-symbols-outlined align-middle">
-                    search
-                    </span></button>
-                </section>
+<body class="bg-slate-800">
+    <section id="app-container" class="mx-auto text-white">
+        <nav class="bg-orange-400 pt-20 pb-20 rounded-bl-[60px] rounded-br-[60px]">
+            <header class="text-center text-2xl font-bold">beerMe <img src="https://img.icons8.com/office/40/null/bavarian-beer-mug.png" class="inline"/></header>
+                <section class="text-center mt-10 md:mb-20 mb-10 align-middle">
+                    <input type="type" id="city-search-bar" class="border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit" placeholder="City"></input>
+                    <input type="type" id="state-search-bar" class="border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit" placeholder="State (Optional)"></input>
+                    <button class="border-solid rounded-lg border-2 p-2 align-middle w-3/4 md:w-fit" onclick="if (document.getElementById('city-search-bar').value !== '') { searchBreweries(document.getElementById('city-search-bar').value); }"><span class="material-symbols-outlined align-middle">
+                        search
+                        </span></button>
+                    </section>
         </nav>
-        <section id="location-container" class="container">
+        <section id="location-container" class="container mt-10">
             <h1 class="text-lg">Locations:</h1>
             <p id="locations-grabbed" class="mb-10"></p>
         </section>
