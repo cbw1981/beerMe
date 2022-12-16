@@ -13,13 +13,25 @@ function initMap() {
   });
 }
 
+console.log(searchQuery.value)
+
 function searchBreweries(searchValue) {
   document.getElementById("locations-grabbed").innerHTML = "";
   fetch('https://api.openbrewerydb.org/breweries?by_city=' + searchValue + "&per_page=10")
   .then((response) => response.json())
   .then((data) => {
     for (i = 0; i < data.length; i++) {
+      locationSection = document.createElement('section');
       document.getElementById("locations-grabbed").innerHTML = document.getElementById("locations-grabbed").innerHTML + ("<br>" + data[i].name + "<br>" + data[i].street + "<br>");
+      if (data[i].website_url !== null) {
+      document.getElementById("locations-grabbed").innerHTML = document.getElementById("locations-grabbed").innerHTML + (`<button class='border-solid rounded-lg border-2 p-2'><a href='${data[i].website_url}'>Website</button>`)
+      }
+      if (data[i].phone == null) {
+        document.getElementById("locations-grabbed").innerHTML = document.getElementById("locations-grabbed").innerHTML + "<br>";
+      }
+      if (data[i].phone !== null) {
+        document.getElementById("locations-grabbed").innerHTML = document.getElementById("locations-grabbed").innerHTML + (`<button class='border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`)
+        }
       console.log(data[i].name);
     }
   })

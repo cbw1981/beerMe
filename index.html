@@ -20,7 +20,7 @@
         <nav class="inline">
             <section class="text-center mt-10 align-middle">
                 <input type="type" id="search-bar" class="border-solid border-2 rounded-lg p-2 align-middle" placeholder="City"></input>
-                <button class="border-solid rounded-lg border-2 p-2 align-middle" onclick="searchBreweries(document.getElementById('search-bar').value);"><span class="material-symbols-outlined align-middle">
+                <button class="border-solid rounded-lg border-2 p-2 align-middle" onclick="if (document.getElementById('search-bar').value !== '') { searchBreweries(document.getElementById('search-bar').value); }"><span class="material-symbols-outlined align-middle">
                     search
                     </span></button>
                 </section>
