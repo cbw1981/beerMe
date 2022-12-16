@@ -4,24 +4,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--Google Icons Import-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!--CSS Libraries Import-->
-
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/css/style.css">
     <!--JavaScript Import-->
     <script src="./assets/js/script.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <title>BeerMe</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <title>Document</title>
 </head>
 <body>
     <section id="app-container" class="container mx-auto">
+        <header class="text-center mt-20 text-2xl font-bold">Beer Me <img src="https://img.icons8.com/office/40/null/bavarian-beer-mug.png" class="inline"/></header>
         <nav class="inline">
-            <header class="text-center mt-20">Beer Me</header>
-            <div class=""></div>
-            <input type="type" id="search-bar" placeholder="Search"></input>
-            <button>Search</button>
+            <section class="text-center mt-10 align-middle">
+                <input type="type" id="search-bar" class="border-solid border-2 rounded-lg p-2 align-middle" placeholder="City"></input>
+                <button class="border-solid rounded-lg border-2 p-2 align-middle" onclick="searchBreweries(document.getElementById('search-bar').value);"><span class="material-symbols-outlined align-middle">
+                    search
+                    </span></button>
+                </section>
         </nav>
+        <section id="location-container" class="container">
+            <h1 class="text-lg">Locations:</h1>
+            <p id="locations-grabbed" class="mb-10"></p>
+        </section>
         <section class="map" id="map"></section>
         <section class="results" id ="results"></section>
     </section>
 </body>
-</html>in
+</html>
