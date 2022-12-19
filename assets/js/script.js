@@ -1,41 +1,49 @@
 let searchQuery = document.getElementById("search-bar");
 let locationsGrabbed = document.getElementById("locations-grabbed");
+let pageCountLocation = document.getElementById("page-count-location");
 let locationContainer = "";
 let stateValue = '';
 let cityReplaced = '';
 let capitalizedType = '';
 let totalBreweries = 0;
 let totalPages = 0;
-
-fetch('https://api.openbrewerydb.org/breweries?by_city=Richmond')
-  .then((response) => response.json())
-  .then((data) => console.log(data));
-
-  let map;
-
-function initMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 8,
-  });
-}
+let currentPage = 1;
+let storedLocation = "";
 
 function getTotalBreweries() {
-  fetch('https://api.openbrewerydb.org/breweries' + cityReplaced + stateValue + `&page=${totalBreweries}&per_page=10`)
+  fetch('https://api.openbrewerydb.org/breweries' + storedLocation + `&page=${totalBreweries}&per_page=10`)
   .then((response) => response.json())
   .then((data) => {
     totalBreweries = totalBreweries + 1;
+    console.log(totalBreweries);
     if (data.length > 0) {
       getTotalBreweries();
     } else {
-      totalPages = totalBreweries;
-      locationsGrabbed.innerHTML = locationsGrabbed.innerHTML+ (`<div>${currentPage} of ${totalPages}</div>`);
+      totalPages = totalBreweries - 2;
+      console.log(totalPages);
+      pageCountLocation.innerHTML = pageCountLocation.innerHTML + (`<button class='inline' onclick='incrementPage(-1)'><span class='material-symbols-outlined inline align-middle'>chevron_left</span></button><div class='inline align-middle'>${currentPage} of ${totalPages}</div><button class='inline' onclick='incrementPage(1)'><span class='material-symbols-outlined inline align-middle'>chevron_right</span></button>`);
     }
-    console.log(totalBreweries);
+    
   })
 }
 
+function incrementPage(amount) {
+  if (amount == -1) {
+    if (currentPage !== 1) {
+      currentPage = currentPage + amount;
+      searchBreweries(document.getElementById('city-search-bar').value, currentPage);
+    }
+  }
+  if (amount == 1) {
+    if (currentPage !== totalPages) {
+      currentPage = currentPage + amount;
+      searchBreweries(document.getElementById('city-search-bar').value, currentPage);
+    }
+  }
+}
+
 function searchBreweries(searchValue, page) {
+  pageCountLocation.innerHTML = "";
   currentPage = page;
   totalBreweries = 0;
   totalPages = 0;
@@ -45,14 +53,14 @@ function searchBreweries(searchValue, page) {
   if (document.getElementById("state-search-bar").value !== '') {
     stateValue = "&by_state=" + document.getElementById("state-search-bar").value.replace(/ /g, '+');
   }
-  getTotalBreweries();
+  storedLocation = cityReplaced + stateValue;
   fetch('https://api.openbrewerydb.org/breweries' + cityReplaced + "&per_page=10" + stateValue + `&page=${page}`)
   .then((response) => response.json())
   .then((data) => {
     for (i = 0; i < data.length; i++) {
       locationContainer = document.createElement('section');
       locationContainer.setAttribute("id", "inner-location-container");
-      locationContainer.setAttribute("class", "bg-orange-400 relative grid grid-cols-7 p-0 mb-10 rounded-lg");
+      locationContainer.setAttribute("class", "bg-orange-400 relative grid grid-cols-7 p-0 mt-10 rounded-lg grid-rows-1");
       leftColumn = document.createElement('section');
       leftColumn.setAttribute("id", "left-column");
       leftColumn.setAttribute("class", "col-span-2");
@@ -70,15 +78,15 @@ function searchBreweries(searchValue, page) {
         src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAHXC5hqdUUZf7FwQ_DnsfJ09qlk3xbick&q=${spacedStreet},${data[i].city},${data[i].state}">
       </iframe>`)
       } else {
-        leftColumn.innerHTML = leftColumn.innerHTML + `<div class="h-[250px] w-full bg-gray-700 rounded-lg rounded-r-none relative"><p class="absolute top-1/2 left-1/2 text-center -translate-x-1/2 -translate-y-1/2">No map available!</p></div>`
+        leftColumn.innerHTML = leftColumn.innerHTML + `<div class="h-[250px] w-full bg-gray-700 rounded-lg rounded-r-none relative"><p class="absolute top-1/2 left-1/2 text-center -translate-x-1/2 -translate-y-1/2">No map available.</p></div>`
       }
       rightColumn.innerHTML = rightColumn.innerHTML + ("<h1 class='text-2xl text-left'>" + data[i].name + "</h1>");
       if (data[i].street !== null) {
-        rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-sm text-gray-600'>" + data[i].street + "<h3>");
+        rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-left text-sm text-gray-600'>" + data[i].street + "<h3>");
       } else {
-        rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-sm text-gray-600'>No street found.</h3>");
+        rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-left text-sm text-gray-600'>No street found.</h3>");
       }
-      rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-sm text-gray-600 mb-10'>" + data[i].city + "<h3>");
+      rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-left text-sm text-gray-600 mb-10'>" + data[i].city + "<h3>");
       let capitalizedState = data[i].state[0].toUpperCase() + data[i].state.substring(1);
       rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[10px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
       sell
@@ -112,7 +120,9 @@ function searchBreweries(searchValue, page) {
       console.log(data[i].name);
     }
 
-
+    if (data.length !== 0) {
+      getTotalBreweries();
+    }
     if (data.length == 0) {
       document.getElementById("locations-grabbed").innerHTML = "<p class='text-center mt-10'>No locations found! Please try again.</p>";
     }
