@@ -1,4 +1,6 @@
 let searchQuery = document.getElementById("search-bar");
+let locationsGrabbed = document.getElementById("locations-grabbed");
+let locationContainer = "";
 let stateValue = '';
 let capitalizedType = '';
 
@@ -16,7 +18,7 @@ function initMap() {
 }
 
 function searchBreweries(searchValue) {
-  document.getElementById("locations-grabbed").innerHTML = "";
+  locationsGrabbed.innerHTML = "";
   let cityReplaced = searchValue.replace(/ /g, '+');
   convertToFullState();
   if (document.getElementById("state-search-bar").value !== '') {
@@ -26,19 +28,34 @@ function searchBreweries(searchValue) {
   .then((response) => response.json())
   .then((data) => {
     for (i = 0; i < data.length; i++) {
-      let locationContainer = document.createElement('section');
+      locationContainer = document.createElement('section');
       locationContainer.setAttribute("id", "inner-location-container");
       locationContainer.setAttribute("class", "bg-orange-400 relative");
+      if (data[i].street != null) {
+        let spacedStreet = data[i].street.replace(/ /g, '+');;
+        locationContainer.innerHTML = locationContainer.innerHTML + (`<iframe
+        class="w-full mt-4 rounded-lg"
+        width="1800"
+        height="250"
+        frameborder="0" style="border:0"
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAHXC5hqdUUZf7FwQ_DnsfJ09qlk3xbick&q=${spacedStreet},${data[i].city},${stateValue}">
+      </iframe>`)
+      }
       locationContainer.innerHTML = locationContainer.innerHTML + ("<h1 class='text-2xl'>" + data[i].name + "</h1>");
       locationContainer.innerHTML = locationContainer.innerHTML + ("<h3 class='text-sm text-gray-600 mb-10'>" + data[i].street + "<h3>");
+      let capitalizedState = data[i].state[0].toUpperCase() + data[i].state.substring(1);
+      locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute mr-2 md:left-2 md:top-[10px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
+      sell
+      </span> ${capitalizedState}</div>`);
       if (data[i].brewery_type !== null) {
         capitalizedType = data[i].brewery_type[0].toUpperCase() + data[i].brewery_type.substring(1);
-        locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='bar-tag' class='md:absolute md:right-2 md:top-2 border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
+        locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:left-2 md:top-[60px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
         sell
         </span> ${capitalizedType}</div>`);
         }
       if (data[i].website_url !== null) {
-        locationContainer.innerHTML = locationContainer.innerHTML + (`<button class='border-solid rounded-lg border-2 p-2'><a href='${data[i].website_url}'>Website</button>`);
+        locationContainer.innerHTML = locationContainer.innerHTML + (`<br><button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
         }
         if (data[i].website_url !== null && data[i].phone !== null) {
           locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='button-divider' class='inline ml-2 mr-2'></div>`);
@@ -48,8 +65,8 @@ function searchBreweries(searchValue) {
         }
         if (data[i].phone !== null) {
           locationContainer.innerHTML = locationContainer.innerHTML + (`<button class='border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
-          }
-      document.body.appendChild(locationContainer);
+        }
+      locationsGrabbed.appendChild(locationContainer);
       console.log(data[i].name);
     }
     if (data.length == 0) {
@@ -205,5 +222,3 @@ function convertToFullState() {
     document.getElementById("state-search-bar").value = "Wyoming";
   }
 }
-
-window.initMap = initMap;
