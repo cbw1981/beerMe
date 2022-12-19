@@ -22,7 +22,7 @@
                     
                     <input type="type" id="city-search-bar" class="border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit" placeholder="City"></input>
                     <input type="type" id="state-search-bar" class="border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit" placeholder="State (Optional)"></input>
-                    <button class="border-solid rounded-lg border-2 p-2 align-middle w-3/4 md:w-fit" onclick="if (document.getElementById('city-search-bar').value !== '') { searchBreweries(document.getElementById('city-search-bar').value); }"><span class="material-symbols-outlined align-middle">
+                    <button class="border-solid rounded-lg border-2 p-2 align-middle w-3/4 md:w-fit" onclick="searchBreweries(document.getElementById('city-search-bar').value, 1)"><span class="material-symbols-outlined align-middle">
                         search
                         </span></button>
                     </section>

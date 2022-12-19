@@ -2,7 +2,10 @@ let searchQuery = document.getElementById("search-bar");
 let locationsGrabbed = document.getElementById("locations-grabbed");
 let locationContainer = "";
 let stateValue = '';
+let cityReplaced = '';
 let capitalizedType = '';
+let totalBreweries = 0;
+let totalPages = 0;
 
 fetch('https://api.openbrewerydb.org/breweries?by_city=Richmond')
   .then((response) => response.json())
@@ -17,58 +20,99 @@ function initMap() {
   });
 }
 
-function searchBreweries(searchValue) {
+function getTotalBreweries() {
+  fetch('https://api.openbrewerydb.org/breweries' + cityReplaced + stateValue + `&page=${totalBreweries}&per_page=10`)
+  .then((response) => response.json())
+  .then((data) => {
+    totalBreweries = totalBreweries + 1;
+    if (data.length > 0) {
+      getTotalBreweries();
+    } else {
+      totalPages = totalBreweries;
+      locationsGrabbed.innerHTML = locationsGrabbed.innerHTML+ (`<div>${currentPage} of ${totalPages}</div>`);
+    }
+    console.log(totalBreweries);
+  })
+}
+
+function searchBreweries(searchValue, page) {
+  currentPage = page;
+  totalBreweries = 0;
+  totalPages = 0;
   locationsGrabbed.innerHTML = "";
-  let cityReplaced = searchValue.replace(/ /g, '+');
+  cityReplaced = "?by_city=" + searchValue.replace(/ /g, '+');
   convertToFullState();
   if (document.getElementById("state-search-bar").value !== '') {
     stateValue = "&by_state=" + document.getElementById("state-search-bar").value.replace(/ /g, '+');
   }
-  fetch('https://api.openbrewerydb.org/breweries?by_city=' + cityReplaced + "&per_page=10" + stateValue)
+  getTotalBreweries();
+  fetch('https://api.openbrewerydb.org/breweries' + cityReplaced + "&per_page=10" + stateValue + `&page=${page}`)
   .then((response) => response.json())
   .then((data) => {
     for (i = 0; i < data.length; i++) {
       locationContainer = document.createElement('section');
       locationContainer.setAttribute("id", "inner-location-container");
-      locationContainer.setAttribute("class", "bg-orange-400 relative");
+      locationContainer.setAttribute("class", "bg-orange-400 relative grid grid-cols-7 p-0 mb-10 rounded-lg");
+      leftColumn = document.createElement('section');
+      leftColumn.setAttribute("id", "left-column");
+      leftColumn.setAttribute("class", "col-span-2");
+      rightColumn = document.createElement('section');
+      rightColumn.setAttribute("id", "right-column");
+      rightColumn.setAttribute("class", "col-span-4 pl-4 pt-[10px]");
       if (data[i].street != null) {
         let spacedStreet = data[i].street.replace(/ /g, '+');;
-        locationContainer.innerHTML = locationContainer.innerHTML + (`<iframe
-        class="w-full mt-4 rounded-lg"
-        width="1800"
+        leftColumn.innerHTML = leftColumn.innerHTML + (`<iframe
+        class="rounded-lg rounded-r-none w-full"
+        width="200"
         height="250"
         frameborder="0" style="border:0"
         referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAHXC5hqdUUZf7FwQ_DnsfJ09qlk3xbick&q=${spacedStreet},${data[i].city},${stateValue}">
+        src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAHXC5hqdUUZf7FwQ_DnsfJ09qlk3xbick&q=${spacedStreet},${data[i].city},${data[i].state}">
       </iframe>`)
+      } else {
+        leftColumn.innerHTML = leftColumn.innerHTML + `<div class="h-[250px] w-full bg-gray-700 rounded-lg rounded-r-none relative"><p class="absolute top-1/2 left-1/2 text-center -translate-x-1/2 -translate-y-1/2">No map available!</p></div>`
       }
-      locationContainer.innerHTML = locationContainer.innerHTML + ("<h1 class='text-2xl'>" + data[i].name + "</h1>");
-      locationContainer.innerHTML = locationContainer.innerHTML + ("<h3 class='text-sm text-gray-600 mb-10'>" + data[i].street + "<h3>");
+      rightColumn.innerHTML = rightColumn.innerHTML + ("<h1 class='text-2xl text-left'>" + data[i].name + "</h1>");
+      if (data[i].street !== null) {
+        rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-sm text-gray-600'>" + data[i].street + "<h3>");
+      } else {
+        rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-sm text-gray-600'>No street found.</h3>");
+      }
+      rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-sm text-gray-600 mb-10'>" + data[i].city + "<h3>");
       let capitalizedState = data[i].state[0].toUpperCase() + data[i].state.substring(1);
-      locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute mr-2 md:left-2 md:top-[10px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
+      rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[10px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
       sell
       </span> ${capitalizedState}</div>`);
       if (data[i].brewery_type !== null) {
         capitalizedType = data[i].brewery_type[0].toUpperCase() + data[i].brewery_type.substring(1);
-        locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:left-2 md:top-[60px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
+        rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[60px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
         sell
         </span> ${capitalizedType}</div>`);
         }
-      if (data[i].website_url !== null) {
-        locationContainer.innerHTML = locationContainer.innerHTML + (`<br><button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
+        if (data[i].website_url !== null) {
+        rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
         }
         if (data[i].website_url !== null && data[i].phone !== null) {
-          locationContainer.innerHTML = locationContainer.innerHTML + (`<div id='button-divider' class='inline ml-2 mr-2'></div>`);
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='button-divider' class='inline ml-2 mr-2'></div>`);
         }
         if (data[i].phone == null) {
-          locationContainer.innerHTML = locationContainer.innerHTML + "<br>";
+          rightColumn.innerHTML = rightColumn.innerHTML + "<br>";
         }
-        if (data[i].phone !== null) {
-          locationContainer.innerHTML = locationContainer.innerHTML + (`<button class='border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
+        if (data[i].phone !== null && data[i].website_url !== null) {
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
         }
+        if (data[i].phone !== null && data[i].website_url == null) {
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
+        }
+      
       locationsGrabbed.appendChild(locationContainer);
+      locationContainer.appendChild(leftColumn);
+      locationContainer.appendChild(rightColumn);
+      
       console.log(data[i].name);
     }
+
+
     if (data.length == 0) {
       document.getElementById("locations-grabbed").innerHTML = "<p class='text-center mt-10'>No locations found! Please try again.</p>";
     }
