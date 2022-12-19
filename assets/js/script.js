@@ -70,7 +70,8 @@ function searchBreweries(searchValue, page) {
       if (data[i].street != null) {
         let spacedStreet = data[i].street.replace(/ /g, '+');;
         leftColumn.innerHTML = leftColumn.innerHTML + (`<iframe
-        class="rounded-lg rounded-r-none w-full"
+        class="rounded-lg rounded-r-none w-full h-full"
+        id="google-map min-h-[250px]"
         width="200"
         height="250"
         frameborder="0" style="border:0"
@@ -98,19 +99,19 @@ function searchBreweries(searchValue, page) {
         </span> ${capitalizedType}</div>`);
         }
         if (data[i].website_url !== null) {
-        rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
+        rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
         }
         if (data[i].website_url !== null && data[i].phone !== null) {
           rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='button-divider' class='inline ml-2 mr-2'></div>`);
         }
         if (data[i].phone == null) {
-          rightColumn.innerHTML = rightColumn.innerHTML + "<br>";
+          rightColumn.innerHTML = rightColumn.innerHTML + "";
         }
         if (data[i].phone !== null && data[i].website_url !== null) {
-          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
         }
         if (data[i].phone !== null && data[i].website_url == null) {
-          rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='border-solid mt-10 rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
         }
       
       locationsGrabbed.appendChild(locationContainer);
