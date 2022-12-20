@@ -1,6 +1,7 @@
 let searchQuery = document.getElementById("search-bar");
 let locationsGrabbed = document.getElementById("locations-grabbed");
 let pageCountLocation = document.getElementById("page-count-location");
+let rawStateValue = document.getElementById("state-search-bar");
 let locationContainer = "";
 let stateValue = '';
 let cityReplaced = '';
@@ -9,6 +10,15 @@ let totalBreweries = 0;
 let totalPages = 0;
 let currentPage = 1;
 let storedLocation = "";
+var storedSearches = [];
+let previousSearchesArray = [];
+let currentSearchLog = -1;
+let searchLogLimit = 5;
+
+if (localStorage.getItem('previousSearches') !== undefined) {
+  searchContainer.innerHTML = searchContainer.innerHTML + storedSearches[currentSearchLog];
+  console.log(storedSearches + "log1");
+}
 
 function getTotalBreweries() {
   fetch('https://api.openbrewerydb.org/breweries' + storedLocation + `&page=${totalBreweries}&per_page=10`)
@@ -43,6 +53,9 @@ function incrementPage(amount) {
 }
 
 function searchBreweries(searchValue, page) {
+  
+  
+  console.log(previousSearchesArray);
   pageCountLocation.innerHTML = "";
   currentPage = page;
   totalBreweries = 0;
@@ -50,7 +63,7 @@ function searchBreweries(searchValue, page) {
   locationsGrabbed.innerHTML = "";
   cityReplaced = "?by_city=" + searchValue.replace(/ /g, '+');
   convertToFullState();
-  if (document.getElementById("state-search-bar").value !== '') {
+  if (document.getElementById("state-search-bar").value !== null) {
     stateValue = "&by_state=" + document.getElementById("state-search-bar").value.replace(/ /g, '+');
   }
   storedLocation = cityReplaced + stateValue;
@@ -113,7 +126,8 @@ function searchBreweries(searchValue, page) {
         if (data[i].phone !== null && data[i].website_url == null) {
           rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
         }
-      
+
+      document.getElementById("previous-searches-container").appendChild(searchContainer);
       locationsGrabbed.appendChild(locationContainer);
       locationContainer.appendChild(leftColumn);
       locationContainer.appendChild(rightColumn);
@@ -275,5 +289,23 @@ function convertToFullState() {
   }
   if (document.getElementById("state-search-bar").value == "WY" || document.getElementById("state-search-bar").value == "wy") {
     document.getElementById("state-search-bar").value = "Wyoming";
+  }
+  
+  searchContainer = document.createElement('section');
+  searchContainer.setAttribute("id", "inner-search-container");
+  if (currentSearchLog < searchLogLimit) {
+  previousSearchesArray.push([cityName = document.getElementById('city-search-bar').value, stateName = rawStateValue.value])
+  currentSearchLog = currentSearchLog + 1;
+  }
+    
+  localStorage.setItem('previousSearches', JSON.stringify(previousSearchesArray));
+  console.log("previoussearchesarray " + previousSearchesArray);
+  storedSearches = JSON.parse(localStorage.getItem("previousSearches"));
+  console.log(storedSearches + "storedsearches");
+  console.log(currentSearchLog + "log1");
+
+  if (localStorage.getItem('previousSearches') !== undefined) {
+    searchContainer.innerHTML = searchContainer.innerHTML + storedSearches[currentSearchLog];
+    console.log(storedSearches + "log1");
   }
 }

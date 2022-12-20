@@ -19,12 +19,15 @@
         <nav class="bg-orange-400 pt-20 pb-20 rounded-bl-[60px] rounded-br-[60px]">
             <header class="text-center text-2xl font-bold">beerMe <img src="https://img.icons8.com/office/40/null/bavarian-beer-mug.png" class="inline"/></header>
                 <section class="text-center mt-10 md:mb-20 mb-10 align-middle">
-                    
-                    <input type="type" id="city-search-bar" class="border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit" placeholder="City"></input>
+                    <section id="hoverable">
+                    <input type="type" id="city-search-bar" class="relative border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit hover:inline" placeholder="City"></input>
                     <input type="type" id="state-search-bar" class="border-solid border-2 rounded-lg p-2 mb-3 md:mb-0 align-middle text-black w-3/4 md:w-fit" placeholder="State (Optional)"></input>
+                    
                     <button class="border-solid rounded-lg border-2 p-2 align-middle w-3/4 md:w-fit" onclick="searchBreweries(document.getElementById('city-search-bar').value, 1)"><span class="material-symbols-outlined align-middle">
                         search
                         </span></button>
+                    <section id="previous-searches-container" class="absolute"></section>
+                    </section>
                     </section>
         </nav>
         <section id="location-container" class="mt-10 pl-10 pr-10">
