@@ -1,0 +1,27 @@
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
+
+#inner-location-container {
+  color: white;
+  border: 1px solid white;
+  max-width: 800px;
+}
+
+#hoverable:hover #previous-searches-container {
+  opacity: 1 !important;
+}
+
+#previous-searches-container {
+  opacity: 0;
+  left: 50%;
+  transform: translate(-50%);
+  margin-top: 10px;
+  padding: 5px;
+  background-color: bisque;
+  transition: opacity 0.5s;
+}
