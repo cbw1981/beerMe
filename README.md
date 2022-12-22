@@ -13,6 +13,6 @@ HOW TO RUN
 To run the project you need to put your city and state and then all of the nearist breweries, cideries, brewpubs and bottleshops will pop up.
 
 TEAM MEMBERS 
-George Thomas
-Clayton Wilkey
+George Thomas,
+Clayton Wilkey,
 Benjamin Scheetz
