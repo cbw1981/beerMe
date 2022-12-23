@@ -16,8 +16,10 @@ let currentSearchLog = -1;
 let searchLogLimit = 5;
 
 if (localStorage.getItem('previousSearches') !== undefined) {
-  searchContainer.innerHTML = searchContainer.innerHTML + storedSearches[currentSearchLog];
-  console.log(storedSearches + "log1");
+  if (!(storedSearches.length >= searchLogLimit)) { 
+    searchContainer.innerHTML = searchContainer.innerHTML + storedSearches[currentSearchLog]; 
+  }
+  console.log(storedSearches.length);
 }
 
 function getTotalBreweries() {
@@ -28,6 +30,7 @@ function getTotalBreweries() {
     console.log(totalBreweries);
     if (data.length > 0) {
       getTotalBreweries();
+      pageCountLocation.innerHTML = "Page count loading...";
     } else {
       totalPages = totalBreweries - 2;
       console.log(totalPages);
