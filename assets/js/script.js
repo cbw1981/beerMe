@@ -17,9 +17,9 @@ let searchLogLimit = 5;
 
 if (localStorage.getItem('previousSearches') !== undefined) {
   if (!(storedSearches.length >= searchLogLimit)) { 
-    searchContainer.innerHTML = searchContainer.innerHTML + storedSearches[currentSearchLog]; 
+    searchContainer.innerHTML = searchContainer.innerHTML + `<button class='search-button'>${storedSearches[currentSearchLog]}</button>`; 
   }
-  console.log(storedSearches.length);
+  console.log(currentSearchLog);
 }
 
 function getTotalBreweries() {
@@ -30,7 +30,6 @@ function getTotalBreweries() {
     console.log(totalBreweries);
     if (data.length > 0) {
       getTotalBreweries();
-      pageCountLocation.innerHTML = "Page count loading...";
     } else {
       totalPages = totalBreweries - 2;
       console.log(totalPages);
@@ -79,10 +78,10 @@ function searchBreweries(searchValue, page) {
       locationContainer.setAttribute("class", "bg-orange-400 relative grid grid-cols-7 p-0 mt-10 rounded-lg grid-rows-1");
       leftColumn = document.createElement('section');
       leftColumn.setAttribute("id", "left-column");
-      leftColumn.setAttribute("class", "col-span-2");
+      leftColumn.setAttribute("class", "md:col-span-2 col-span-7");
       rightColumn = document.createElement('section');
       rightColumn.setAttribute("id", "right-column");
-      rightColumn.setAttribute("class", "col-span-4 pl-4 pt-[10px]");
+      rightColumn.setAttribute("class", "md:col-span-4 col-span-7 pl-4 pt-[10px]");
       if (data[i].street != null) {
         let spacedStreet = data[i].street.replace(/ /g, '+');;
         leftColumn.innerHTML = leftColumn.innerHTML + (`<iframe
@@ -105,17 +104,17 @@ function searchBreweries(searchValue, page) {
       }
       rightColumn.innerHTML = rightColumn.innerHTML + ("<h3 class='text-left text-sm text-gray-600 mb-10'>" + data[i].city + "<h3>");
       let capitalizedState = data[i].state[0].toUpperCase() + data[i].state.substring(1);
-      rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[10px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
+      rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[10px] border-solid rounded-[20px] border-2 p-2 max-md:mr-2 ml-2 w-fit'><span class="material-symbols-outlined text-sm">
       sell
       </span> ${capitalizedState}</div>`);
       if (data[i].brewery_type !== null) {
         capitalizedType = data[i].brewery_type[0].toUpperCase() + data[i].brewery_type.substring(1);
-        rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[60px] border-solid rounded-[20px] border-2 p-2 mb-4 w-fit'><span class="material-symbols-outlined text-sm">
+        rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='bar-tag' class='text-left inline md:absolute md:right-2 md:top-[60px] border-solid rounded-[20px] border-2 p-2 w-fit'><span class="material-symbols-outlined text-sm">
         sell
         </span> ${capitalizedType}</div>`);
         }
         if (data[i].website_url !== null) {
-        rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
+        rightColumn.innerHTML = rightColumn.innerHTML + (`<br><button class='align-bottom border-solid rounded-lg border-2 p-2 mt-4 mb-4'><a href='${data[i].website_url}' target="_blank" rel="noopener noreferrer">Website</button>`);
         }
         if (data[i].website_url !== null && data[i].phone !== null) {
           rightColumn.innerHTML = rightColumn.innerHTML + (`<div id='button-divider' class='inline ml-2 mr-2'></div>`);
@@ -124,10 +123,10 @@ function searchBreweries(searchValue, page) {
           rightColumn.innerHTML = rightColumn.innerHTML + "";
         }
         if (data[i].phone !== null && data[i].website_url !== null) {
-          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2 mb-4'><a href='tel:${data[i].phone}'>Call</button><br>`);
         }
         if (data[i].phone !== null && data[i].website_url == null) {
-          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2'><a href='tel:${data[i].phone}'>Call</button><br>`);
+          rightColumn.innerHTML = rightColumn.innerHTML + (`<button class='align-bottom border-solid rounded-lg border-2 p-2 mb-4'><a href='tel:${data[i].phone}'>Call</button><br>`);
         }
 
       document.getElementById("previous-searches-container").appendChild(searchContainer);
