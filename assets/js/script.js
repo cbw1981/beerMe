@@ -73,9 +73,15 @@ function convertToAbbreviation(stateName) {
 stateName = stateName.toUpperCase();
 for(i = 0; i < states.length; i++) {
     if(states[i][1] == stateName) {
-      outputState = states[i][0];
-      return(outputState);
+      let storedState = states[i][0];
+      console.log(storedState);
     }
+  }
+}
+
+if (localStorage.getItem('previousSearches') !== undefined) {
+  for (i = 0; i < storedSearches.length; i++) {
+    searchContainer.innerHTML = searchContainer.innerHTML + `<button class='search-button m-2 p-1' onclick='replaceSearch("${storedSearches[i][0]}", "${storedSearches[i][1]}");'>${storedSearches[i][0] + ", " + storedSearches[i][1]}</button>`;
   }
 }
 
@@ -133,16 +139,6 @@ function searchBreweries(searchValue, page, store) {
   }
   storedLocation = cityReplaced + stateValue;
 
-  const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer sp-mvayoOWfVv8Xu3Z9Pk_07izScmov58heqpF3fg7BCd2KfaxNVzbe4whtbzvzTbJnmzL2XNBrvM9xvcGGD2Ko1HJBvRlLdq2UXtS84-IrvGGfPvY68aFqzXkSsY3Yx'
-    }
-  };
-  
-
-
   fetch('https://api.openbrewerydb.org/breweries' + cityReplaced + "&per_page=10" + stateValue + `&page=${page}`)
   .then((response) => response.json())
   .then((data) => {
@@ -183,6 +179,7 @@ function searchBreweries(searchValue, page, store) {
       rightColumn = document.createElement('section');
       rightColumn.setAttribute("id", "right-column");
       rightColumn.setAttribute("class", "md:col-span-4 col-span-7 pt-[10px]");
+
       if (data[i].street !== undefined) {
         let spacedStreet = data[i].street.replace(/ /g, '+');;
         leftColumn.innerHTML = leftColumn.innerHTML + (`<iframe
@@ -222,7 +219,7 @@ function searchBreweries(searchValue, page, store) {
       locationsGrabbed.appendChild(locationContainer);
       locationContainer.appendChild(leftColumn);
       locationContainer.appendChild(rightColumn);
-      locationContainer.innerHTML = locationContainer.innerHTML + `<br class='max-md:hidden'><button id="more-info" class="w-[700%] ml-0 max-md:mt-8 p-4 bg-red-600 rounded-b-lg">More Info.</div>`;
+      locationContainer.innerHTML = locationContainer.innerHTML + `<br class='max-md:hidden'><button id="more-info" class="w-[700%] ml-0 max-md:mt-8 p-4 bg-red-600 rounded-b-lg" onclick="showMoreInfo('${data[i].name}', '${data[i].street}', '${data[i].city}', '${data[i].state}', '${data[i].country}', '${data[i].phone}', '${data[i].website_url}');">More Info</div>`;
       
       console.log(data[i].name);
     }
@@ -236,6 +233,61 @@ function searchBreweries(searchValue, page, store) {
   })
 }
 
+function showMoreInfo(name, street, city, state, country, phone, website) {
+
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer sp-mvayoOWfVv8Xu3Z9Pk_07izScmov58heqpF3fg7BCd2KfaxNVzbe4whtbzvzTbJnmzL2XNBrvM9xvcGGD2Ko1HJBvRlLdq2UXtS84-IrvGGfPvY68aFqzXkSsY3Yx'
+    }
+  };
+
+  modalBackgroundShader = document.createElement("div");
+  modalBackgroundShader.setAttribute("class", "w-full h-full bg-black opacity-30 fixed top-0 left-0");
+  moreInfoModal = document.createElement("div");
+  moreInfoModal.setAttribute("class", "rounded-lg max-md:w-[300px] max-md:h-[500px] md:w-[600px] md:h-[500px] bg-zinc-800 fixed top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]");
+  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<button class="absolute top-2 right-2"><span class="material-symbols-outlined text-white" onclick="closeInfo();">close</span></button>`
+  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h1 class="text-2xl text-left text-white pl-4 pt-8">${name}</h1>`
+  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-white pl-4 pt-2">${street}</h1>`
+  fetch(`https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/matches?name=${name}&address1=${street}&city=${city}&state=va&country=US&limit=3&match_threshold=default`, options)
+  .then(searchresponse => searchresponse.json())
+  .then(searchresponse => {
+    console.log(searchresponse.businesses[0].id)
+    fetch(`https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/${searchresponse.businesses[0].id}`, options)
+  .then(response => response.json())
+  .then(response => {
+    console.log(response)
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-white pl-4 pt-2 align-middle"><span class="material-symbols-outlined align-middle text-white text-sm">star</span><div class="inline vertical-align">${response.rating}/5, ${response.price}</h1>`;
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + (`<iframe
+  class="rounded-lg p-4 max-md:w-full md:w-[400px] h-200"
+  id="google-map min-h-[250px]"
+  width="200"
+  height="250"
+  frameborder="0" style="border:0"
+  referrerpolicy="no-referrer-when-downgrade"
+  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAHXC5hqdUUZf7FwQ_DnsfJ09qlk3xbick&q=${street},${city},United States">
+</iframe>`)
+  if (website !== undefined) {
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<a href="${website}" target="_blank" rel="noopener noreferrer" class="text-white pl-4"><button class="rounded-full bg-red-600 p-2">Website</button></a>`;
+  }
+  if (phone !== undefined) {
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<a href="tel:${phone}" class="text-white pl-4"><button class="rounded-full bg-red-600 p-2">Call</button></a>`;
+  }
+  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<a href="${response.url}" target="_blank" rel="noopener noreferrer" class="text-white pl-4"><button class="rounded-full bg-red-600 p-2">Open on Yelp</button></a>`
+  })
+  .catch(err => console.error(err));
+  })
+  .catch(err => console.error(err));
+  document.body.appendChild(modalBackgroundShader);
+  document.body.appendChild(moreInfoModal);
+  convertToAbbreviation(state);
+}
+
+function closeInfo() {
+  modalBackgroundShader.remove();
+  moreInfoModal.remove();
+}
 
 function convertToFullState() {
   if (document.getElementById("state-search-bar").value == "AL" || document.getElementById("state-search-bar").value == "al") {

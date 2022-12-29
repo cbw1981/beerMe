@@ -27,3 +27,7 @@
   color: white;
   transition: opacity 0.5s;
 }
+
+#more-info-modal-bg {
+  display: none;
+}
