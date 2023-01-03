@@ -246,10 +246,11 @@ function showMoreInfo(name, street, city, state, country, phone, website) {
   modalBackgroundShader = document.createElement("div");
   modalBackgroundShader.setAttribute("class", "w-full h-full bg-black opacity-30 fixed top-0 left-0");
   moreInfoModal = document.createElement("div");
-  moreInfoModal.setAttribute("class", "rounded-lg max-md:w-[300px] max-md:h-[500px] md:w-[600px] md:h-[500px] bg-zinc-800 fixed top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]");
+  moreInfoModal.setAttribute("class", "rounded-lg max-md:w-[300px] max-md:h-auto pb-8 md:w-[600px] md:h-[500px] bg-zinc-800 fixed top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]");
   moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<button class="absolute top-2 right-2"><span class="material-symbols-outlined text-white" onclick="closeInfo();">close</span></button>`
   moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h1 class="text-2xl text-left text-white pl-4 pt-8">${name}</h1>`
-  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-white pl-4 pt-2">${street}</h1>`
+  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-gray-600 pl-4 pt-1">${street}</h3>`
+  moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-gray-600 pl-4">${city}, ${state}</h3>`
   fetch(`https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/matches?name=${name}&address1=${street}&city=${city}&state=va&country=US&limit=3&match_threshold=default`, options)
   .then(searchresponse => searchresponse.json())
   .then(searchresponse => {
@@ -258,7 +259,13 @@ function showMoreInfo(name, street, city, state, country, phone, website) {
   .then(response => response.json())
   .then(response => {
     console.log(response)
-    moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-white pl-4 pt-2 align-middle"><span class="material-symbols-outlined align-middle text-white text-sm">star</span><div class="inline vertical-align">${response.rating}/5, ${response.price}</h1>`;
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-white pl-4 pt-2 align-middle"><span class="material-symbols-outlined align-middle text-white text-sm">star</span><div class="inline vertical-align">${response.rating}/5, ${response.price}</h3>`;
+    if (response.is_closed == false) {
+      moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-green-600 pl-4 pt-2 align-middle">Now Open</h3>`;
+    }
+    else {
+      moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-red-600 pl-4 pt-2 align-middle">Closed</h3>`;
+    }
     moreInfoModal.innerHTML = moreInfoModal.innerHTML + (`<iframe
   class="rounded-lg p-4 max-md:w-full md:w-[400px] h-200"
   id="google-map min-h-[250px]"
@@ -278,7 +285,26 @@ function showMoreInfo(name, street, city, state, country, phone, website) {
   })
   .catch(err => console.error(err));
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error(err)
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<h3 class="text-md text-left text-white pl-4 pt-2 align-middle">No Yelp information available.</h3>`;
+    moreInfoModal.innerHTML = moreInfoModal.innerHTML + (`<iframe
+    class="rounded-lg p-4 max-md:w-full md:w-[400px] h-200"
+    id="google-map min-h-[250px]"
+    width="200"
+    height="250"
+    frameborder="0" style="border:0"
+    referrerpolicy="no-referrer-when-downgrade"
+    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAHXC5hqdUUZf7FwQ_DnsfJ09qlk3xbick&q=${street},${city},United States">
+  </iframe>`)
+    if (website !== undefined) {
+      moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<a href="${website}" target="_blank" rel="noopener noreferrer" class="text-white pl-4"><button class="rounded-full bg-red-600 p-2">Website</button></a>`;
+    }
+    if (phone !== undefined) {
+      moreInfoModal.innerHTML = moreInfoModal.innerHTML + `<a href="tel:${phone}" class="text-white pl-4"><button class="rounded-full bg-red-600 p-2">Call</button></a>`;
+    }
+    }
+  );
   document.body.appendChild(modalBackgroundShader);
   document.body.appendChild(moreInfoModal);
   convertToAbbreviation(state);
